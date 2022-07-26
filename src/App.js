@@ -7,7 +7,7 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Barebone react web app.
+          Barebone react web app - 2022-Jul26 16:53 PST
         </p>
         <a
           className="App-link"
