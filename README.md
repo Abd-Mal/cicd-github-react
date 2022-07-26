@@ -96,7 +96,7 @@ NETLIFY_AUTH_TOKEN
 NETLIFY_SITE_ID
 ```
 
-- 
+- To trigger the Github actions, "git push" the new changes
 
 ## References
 
