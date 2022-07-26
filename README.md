@@ -32,13 +32,38 @@ $ npm start
 
 ## Deploy
 
+### Serve with a Static server
+
+- See more info: https://cra.link/deployment
+
+- Generate the build folder
+```
+$ npm run build
+```
+
+- Install static server
+```
+$ npm install -g serve
+$ serve -s build
+```
+
 ### Netlify
 Source: [Deploy a React app to netlify using GitHub Actions](https://dev.to/ktscates/deploy-a-react-app-to-netlify-using-github-actions-3akd)
 
 - Create a `netlify.toml` file locally in the project directory and add `build`
   configurations as shown in the `netlify.toml` file
+  
+- Generate the build folder which will be use in netlify
+```
+$ npm run build
+```
 
-- Push the changes to the Github repository  
+- Push the changes to the Github repository
+
+- From the browser, go to the Github project repository, go to actions and 
+  setup the Node.js workflow, which will generate a yaml file. 
+  
+  You have to copy/paste the workflow which you can be found in the screenshot provided below in this article in the yaml file.  
 
 
 ## References
