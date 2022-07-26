@@ -61,10 +61,42 @@ $ npm run build
 - Push the changes to the Github repository
 
 - From the browser, go to the Github project repository, go to actions and 
-  setup the Node.js workflow, which will generate a yaml file. 
+  setup the Node.js workflow, which will generate a `yaml` file. 
   
-  You have to copy/paste the workflow which you can be found in the screenshot provided below in this article in the yaml file.  
+- Revise the workflow `yaml` file by adding the following:
+```
+    - name: Netlify Deploy
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+      run: netlify deploy --prod
+```  
 
+- From the browser, login to your netlify account and create a new site by 
+  drag/drop the build folder generated earlier;
+  - a new site will be created; for example [clinquant-bunny-22f52d](https://clinquant-bunny-22f52d.netlify.app)
+  - [Optional] setup a custom domain & secure the site with HTTPs
+  - The "Site settings" page can be used to configure further; see below;
+
+- Generate a "personal access token" from the "User settings" screen;
+  "Applications > OAuth" tab; "Personal access tokens" panel;
+  click "new access token"
+
+- Get the "Site ID" from the "Site settings" page of the newly created site above;
+  - From the top left near the logo, click the "Company name"
+  - Next click the site name then "Site settings"
+  - Go to the "General > Site details" tab
+  - Copy the "Site ID"
+
+- From the browser, go back to the Github project repository, then go to the 
+  main tab "Settings", and left navigation tab "Security > Secrets > Actions";
+  - add "Repository secrets" for the netlify Auth Token, and Site ID as follow:
+```
+NETLIFY_AUTH_TOKEN
+NETLIFY_SITE_ID
+```
+
+- 
 
 ## References
 
