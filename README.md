@@ -28,10 +28,6 @@ $ npm start
 
 ## Test
 
-- TBD
-
-## Deploy
-
 ### Serve with a Static server
 
 - See more info: https://cra.link/deployment
@@ -47,8 +43,48 @@ $ npm install -g serve
 $ serve -s build
 ```
 
+## Deploy
+
+The deployment will be done using Github Actions CI/CD pipeline (aka workflow).
+The general instructions for creating thee Github Actions workflow:
+
+- Perform the following from the browser on the Github repo
+
+- Go to the Github project repository, go to actions and setup the Node.js 
+  workflow, which will generate a `yaml` file. The file is stored in the 
+  `.github/workflow` folder. We will have one file for each workflow
+  corresponding to the cloud hosting platforms.
+  
+- Revise the workflow `yaml` file to configure the cloud hosting specifics,
+  such as: AUTH token, Site ID, etc. 
+
+- Go to the Github project repository, then go to the main tab "Settings", and 
+  left navigation tab "Security > Secrets > Actions"; add the cloud hosting 
+  specific configurations, referenced in the `yaml` file, to the Github Actions
+  secret file.
+
+- When new changes are pushed to the repo, the workflow will be triggered;
+  it also depends on the branch setup in the `yaml` file, for example, 
+  the following setup will trigger on changes in the `main` branch:
+```
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+```
+
+- The workflow will show success or error from each run; click on the specific
+  run to get detailed logs.
+  
+- The workflow can be manually stopped from the "Actions > Workflows", and
+  select the workflow to stop, and stop it
+
 ### Netlify
+
 Source: [Deploy a React app to netlify using GitHub Actions](https://dev.to/ktscates/deploy-a-react-app-to-netlify-using-github-actions-3akd)
+
+- Prerequisite: create a Netlify account
 
 - Create a `netlify.toml` file locally in the project directory and add `build`
   configurations as shown in the `netlify.toml` file
@@ -61,7 +97,8 @@ $ npm run build
 - Push the changes to the Github repository
 
 - From the browser, go to the Github project repository, go to actions and 
-  setup the Node.js workflow, which will generate a `yaml` file. 
+  setup the deployment workflow, which will generate a `yml` file. For Netlify
+  deployment workflow, the filename is `node.js.yml`
   
 - Revise the workflow `yaml` file by adding the following:
 ```
@@ -96,7 +133,180 @@ NETLIFY_AUTH_TOKEN
 NETLIFY_SITE_ID
 ```
 
-- To trigger the Github actions, "git push" the new changes
+- To trigger the Github actions, "git push" the new changes.
+  NOTE: the remote repository was modified when a new workflow file was created.
+  Therefore, need to `git pull` to synch the local with the remote.
+```
+$ cd ~/projects/cicd-github-react
+$ git pull
+$ git push
+```
+
+### Google Firebase
+
+- Source:
+  - [How to deploy a React app to Firebase using GitHub Actions step-by-step](https://levelup.gitconnected.com/how-to-deploy-a-react-app-to-firebase-using-github-actions-step-by-step-11367e0627d5)
+  - [How to Deploy React App on Firebase Hosting? CI/CD with GitHub Actions | Preview | Custom Domain](https://www.youtube.com/watch?v=Bnd4IO3f2hU)
+  - [Deploy React Application to Firebase using GitHub Actions](https://eng.zemosolabs.com/deploy-react-application-to-firebase-using-github-actions-2c7514fba386)
+
+
+- Prerequisite: create a Google Firebase account
+
+- From the browser, create a firebase project; in the Firebase console, click Add project.
+  Follow the instructions on the screen.
+  
+- From command line, install the Firebase CLI
+```
+$ npm install -g firebase-tools
+```
+
+- From the command line, login to Firebase as shwon below.
+  The browser popup for authentication
+```
+$ firebase login
+``` 
+
+- After successful login, 
+```
+Waiting for authentication...
+
+✔  Success! Logged in as ***@gmail.com
+```
+
+- Check whether we can access the firebase API
+```
+$ firebase projects:list
+✔ Preparing the list of your Firebase projects
+┌──────────────────────┬───────────────────┬────────────────┬──────────────────────┐
+│ Project Display Name │ Project ID        │ Project Number │ Resource Location ID │
+├──────────────────────┼───────────────────┼────────────────┼──────────────────────┤
+│ cicd-github-react    │ cicd-github-react │ 1073305028143  │ [Not specified]      │
+└──────────────────────┴───────────────────┴────────────────┴──────────────────────┘
+
+1 project(s) total.
+```
+
+- Make sure we have the `build` folder to deploy; generate the build folder: 
+```
+$ npm run build
+```
+
+- Initial the project; NOTE: 
+  - use `build` instead of the default `public` folder;
+  - skip Github for now by selecting default
+  - when ask to Overwrite? `build\index.html`, enter n 
+```
+$ cd ~/projects/cicd-github-react
+$ firebase init hosting
+
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /home/gabe/projects/cicd-github-react
+
+
+=== Project Setup
+
+First, let's associate this project directory with a Firebase project.
+You can create multiple project aliases by running firebase use --add,
+but for now we'll just set up a default project.
+
+? Please select an option: Use an existing project
+? Select a default Firebase project for this directory: cicd-github-react (cicd-github-react)
+i  Using project cicd-github-react (cicd-github-react)
+
+=== Hosting Setup
+
+Your public directory is the folder (relative to your project directory) that
+will contain Hosting assets to be uploaded with firebase deploy. If you
+have a build process for your assets, use your build's output directory.
+
+? What do you want to use as your public directory? build
+? Configure as a single-page app (rewrite all urls to /index.html)? Yes
+? Set up automatic builds and deploys with GitHub? No
+? File build/index.html already exists. Overwrite? No
+i  Skipping write of build/index.html
+
+i  Writing configuration info to firebase.json...
+i  Writing project information to .firebaserc...
+
+✔  Firebase initialization complete!
+```
+
+- Deploy
+```
+$ cd ~/projects/cicd-github-react
+$ firebase deploy --only hosting
+
+=== Deploying to 'cicd-github-react'...
+
+i  deploying hosting
+i  hosting[cicd-github-react]: beginning deploy...
+i  hosting[cicd-github-react]: found 15 files in build
+✔  hosting[cicd-github-react]: file upload complete
+i  hosting[cicd-github-react]: finalizing version...
+✔  hosting[cicd-github-react]: version finalized
+i  hosting[cicd-github-react]: releasing new version...
+✔  hosting[cicd-github-react]: release complete
+
+✔  Deploy complete!
+
+Project Console: https://console.firebase.google.com/project/cicd-github-react/overview
+Hosting URL: https://cicd-github-react.web.app
+```
+
+- NEXT, setup Github Actions workflow to deploy to Firebase. We need to get
+  the Firebase CI Token. NOTE: save the token because it is generated once
+  and can't be retrieved again!!  
+```
+$ firebase login:ci
+
+Visit this URL on this device to log in:
+https://accounts.google.com/o/oauth2/auth?[...]
+
+Waiting for authentication...
+
+✔  Success! Use this token to login on a CI server:
+
+1//[...]
+
+Example: firebase deploy --token "$FIREBASE_TOKEN"
+```
+
+- From the browser, go to the Github project repository, go to actions and 
+  setup the workflow, which will generate a `yml` file. For Firebase
+  deployment workflow, the filename is `firebase.yml`.
+
+- Revise the workflow `firebase.yml` file by adding the following:
+```
+ - name: Deploy to Firebase
+      uses: w9jds/firebase-action@v1.5.0
+      with:
+        args: deploy --only hosting
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+```
+
+- From the browser, go back to the Github project repository, then go to the 
+  main tab "Settings", and left navigation tab "Security > Secrets > Actions";
+  - add "Repository secrets" as follow:
+```
+FIREBASE_TOKEN
+```
+
+- To trigger the Github actions, "git push" the new changes.
+  NOTE: the remote repository was modified when a new workflow file was created.
+  Therefore, need to `git pull` to synch the local with the remote.
+```
+$ cd ~/projects/cicd-github-react
+$ git pull
+$ git push
+```
 
 ## References
 
