@@ -3,6 +3,7 @@
 CI/CD using Github Actions to deploy barebone react web application to various 
 cloud hosting environments including:
 - Netlify
+- Firebase
 
 ## Prerequisite
 
@@ -306,6 +307,14 @@ FIREBASE_TOKEN
 $ cd ~/projects/cicd-github-react
 $ git pull
 $ git push
+```
+
+- NOTE: unlike the Netlify deployment, the Firebase deployment using the
+  `w9jds/firebase-action` is actually running inside the docker container.
+  The earlier version `firebase-action@v1.5.0` has an issue as shown below; 
+  which is resolved in the `firebase-action@v2.2.2`.
+```  
+Firebase CLI v11.4.0 is incompatible with Node.js v12.18.1 Please upgrade Node.js to version ^14.18.0 || >=16.4.0
 ```
 
 ## References
