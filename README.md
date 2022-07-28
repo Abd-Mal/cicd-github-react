@@ -10,7 +10,7 @@ cloud hosting environments including:
 - [Node.js & NPM](https://heynode.com/tutorial/install-nodejs-locally-nvm/) 
 
 
-## Develop & Test
+## Develop
 
 - To use the latest version of `create-react-app`, uninstall the package first
   in case it was previously installed globally: 
